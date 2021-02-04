@@ -11,14 +11,15 @@ if [ -z "${AUTH_TOKEN+x}" ]; then
     exit
 fi
 
-inotifywait -r -m "/data/papermerge/import" -e move,create,close  |
+inotifywait -r -m "/data/papermerge/import" -e moved_to -e create -e close_write  |
 while read -r directory events filename; do
     if [ -n "${filename+x}" ] && [ ! "${filename}" = "" ]; then
         echo "[papermerge-importer.sh] Found new file: |${filename}|"
         curl -H "Authorization: Token ${AUTH_TOKEN}"  \
             -T "${directory}${filename}"  \
             "${PAPERMERGE_HOST}/api/document/upload/${filename}" || \
-                echo "[papermerge-importer.sh] curl: error ${?}"
+                echo "[papermerge-importer.sh] curl: error ${?}" \
+        && \
         rm -f "${directory}${filename}" || \
                 echo "[papermerge-importer.sh] rm file: error ${?}"
     fi
