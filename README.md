@@ -1,4 +1,4 @@
-# papermerge-import
+# papermerge-importer
 A script to watch a folder and import it in [Papermerge ](https://papermerge.com/)
 
 ## Configuration
