@@ -11,7 +11,7 @@ if [ -z ${AUTH_TOKEN+x} ]; then
     exit
 fi
 
-inotifywait -r -m -e move,create,close "/data/papermerge/import/" |
+inotifywait -m "/data/papermerge/import" -e move,create,close  |
 while read -r directory events filename; do
     echo "[papermerge-importer.sh] Found new file: ${filename}"
     curl -H "Authorization: Token ${AUTH_TOKEN}"  \
