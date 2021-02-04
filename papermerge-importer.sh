@@ -13,7 +13,7 @@ fi
 
 inotifywait -r -m "/data/papermerge/import" -e move,create,close  |
 while read -r directory events filename; do
-    if [ -n "${filename+x}" ] || [ "${filename}" = "" ]; then
+    if [ -n "${filename+x}" ] || [ ! "${filename}" = "" ]; then
         echo "[papermerge-importer.sh] Found new file: |${filename}|"
         curl -H "Authorization: Token ${AUTH_TOKEN}"  \
             -T "${directory}/${filename}"  \
