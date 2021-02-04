@@ -1,8 +1,6 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
-cd /data/papermerge/import || exit
-
 if [ -z ${PAPERMERGE_HOST+x} ]; then
     echo "[papermerge-importer.sh] Cannot find PAPERMERGE_HOST env variable"
     exit
@@ -13,7 +11,7 @@ if [ -z ${AUTH_TOKEN+x} ]; then
     exit
 fi
 
-inotifywait -r -m . |
+inotifywait -r -m -e move,create,close "/data/papermerge/import/" |
 while read -r directory events filename; do
     echo "[papermerge-importer.sh] Found new file: ${filename}"
     curl -H "Authorization: Token ${AUTH_TOKEN}"  \
