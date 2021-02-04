@@ -13,16 +13,13 @@ fi
 
 inotifywait -r -m "/data/papermerge/import" -e move,create,close  |
 while read -r directory events filename; do
-    echo "[papermerge-importer.sh] directory: |${directory}|"
-    echo "[papermerge-importer.sh] events: |${events}|"
-    echo "[papermerge-importer.sh] filename: |${filename}|"
     if [ -n "${filename+x}" ] && [ ! "${filename}" = "" ]; then
         echo "[papermerge-importer.sh] Found new file: |${filename}|"
         curl -H "Authorization: Token ${AUTH_TOKEN}"  \
-            -T "${directory}/${filename}"  \
+            -T "${directory}${filename}"  \
             "${PAPERMERGE_HOST}/api/document/upload/${filename}" || \
                 echo "[papermerge-importer.sh] curl: error ${?}"
-        rm -f "${directory}/${filename}" || \
+        rm -f "${directory}${filename}" || \
                 echo "[papermerge-importer.sh] rm file: error ${?}"
     fi
 done
