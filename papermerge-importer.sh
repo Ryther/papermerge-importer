@@ -11,10 +11,15 @@ if [ -z "${AUTH_TOKEN+x}" ]; then
     exit
 fi
 
-inotifywait -r -m "/data/papermerge/import" -e moved_to -e close_write  |
+if [ -z "${WATCH_FOLDER+x}" ]; then
+    echo "[papermerge-importer.sh] Cannot find WATCH_FOLDER env variable"
+    exit
+fi
+
+inotifywait -r -m "${WATCH_FOLDER}" -e moved_to -e close_write  |
 while read -r directory events filename; do
     if [ -n "${filename+x}" ] && [ ! "${filename}" = "" ]; then
-        echo "[papermerge-importer.sh] -----------------------------"
+        echo "[papermerge-importer.sh] ------------------------------------------------------"
         echo "[papermerge-importer.sh] Found new file: |${filename}|"
         curl -H "Authorization: Token ${AUTH_TOKEN}"  \
             -T "${directory}${filename}"  \
@@ -25,6 +30,6 @@ while read -r directory events filename; do
         && \
         rm -f "${directory}${filename}" || \
                 echo "[papermerge-importer.sh] rm file: error ${?}"
-        echo "[papermerge-importer.sh] -----------------------------"
+        echo "[papermerge-importer.sh] ------------------------------------------------------"
     fi
 done
