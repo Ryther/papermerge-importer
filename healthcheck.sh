@@ -1,7 +1,8 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
-returnValue=$(<"/tmp/healthcheck.status")
+source /tmp/healthcheck.status
+
 echo "returnValue=${returnValue}"
 
 case $returnValue in

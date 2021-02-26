@@ -28,7 +28,7 @@ log() {
 
 setHealthcheckStatus() {
     returnCode=$1
-    > /tmp/healthcheck.status echo $returnCode
+    > /tmp/healthcheck.status echo "returnCode=${returnCode}"
 }
 
 rm -f /tmp/healthcheck.status
