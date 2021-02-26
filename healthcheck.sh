@@ -3,9 +3,7 @@
 
 source /tmp/healthcheck.status
 
-echo "returnValue=${returnValue}"
-
-case $returnValue in
+case $returnCode in
     0)
         exit 0
     ;;
