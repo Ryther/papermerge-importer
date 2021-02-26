@@ -1,35 +1,38 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
+source ./functions.sh
+
 if [ -z "${PAPERMERGE_HOST+x}" ]; then
-    echo "[papermerge-importer.sh] Cannot find PAPERMERGE_HOST env variable"
+    log "$0" 2 "Cannot find PAPERMERGE_HOST env variable"
     exit
 fi
 
 if [ -z "${AUTH_TOKEN+x}" ]; then
-    echo "[papermerge-importer.sh] Cannot find AUTH_TOKEN env variable"
+    log "$0" 2 "Cannot find AUTH_TOKEN env variable"
     exit
 fi
 
 if [ -z "${WATCH_FOLDER+x}" ]; then
-    echo "[papermerge-importer.sh] Cannot find WATCH_FOLDER env variable"
+    log "$0" 2 "Cannot find WATCH_FOLDER env variable"
     exit
 fi
 
+log "$0" 0 "Starting inotify"
 inotifywait -r -m "${WATCH_FOLDER}" -e moved_to -e close_write  |
 while read -r directory events filename; do
     if [ -n "${filename+x}" ] && [ ! "${filename}" = "" ]; then
-        echo "[papermerge-importer.sh] ------------------------------------------------------"
-        echo "[papermerge-importer.sh] Found new file: |${filename}|"
+        log "$0" 1 "Found new file | Filename: ${filename}"
         curl -H "Authorization: Token ${AUTH_TOKEN}"  \
             -T "${directory}${filename}"  \
             "${PAPERMERGE_HOST}/api/document/upload/${filename}" && \
                 echo "" \
             || \
-                echo "[papermerge-importer.sh] curl: error ${?}" \
+                log "$0" 2 "curl: error ${?}" \
         && \
-        rm -f "${directory}${filename}" || \
-                echo "[papermerge-importer.sh] rm file: error ${?}"
-        echo "[papermerge-importer.sh] ------------------------------------------------------"
+            rm -f "${directory}${filename}" || \
+                log "$0" 2 "rm file: error ${?}" \
+        && \
+            log "$0" 0 "------------------------------------------------------"
     fi
 done
