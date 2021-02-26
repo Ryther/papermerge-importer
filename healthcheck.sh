@@ -2,6 +2,8 @@
 # shellcheck shell=bash
 
 returnValue=$(<"/tmp/healthcheck.status")
+echo "returnValue=${returnValue}"
+
 case $returnValue in
     0)
         exit 0
