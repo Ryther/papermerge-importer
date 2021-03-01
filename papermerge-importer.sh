@@ -23,16 +23,22 @@ inotifywait -r -m "${WATCH_FOLDER}" -e moved_to -e close_write  |
 while read -r directory events filename; do
     if [ -n "${filename+x}" ] && [ ! "${filename}" = "" ]; then
         log "$0" 1 "Found new file | Filename: ${filename}"
-        curl -H "Authorization: Token ${AUTH_TOKEN}"  \
-            -T "${directory}${filename}"  \
-            "${PAPERMERGE_HOST}/api/document/upload/${filename}" && \
-                echo "" \
+        log "$0" 1 "curl -s -o /tmp/api_response -w \"%{http_code}\" -H \"Authorization: Token ${AUTH_TOKEN:0:3}...${AUTH_TOKEN: -3}\" -T \"${directory}${filename}\" \"${PAPERMERGE_HOST}/api/document/upload/${filename}\""
+        http_code=$(curl -s -o /tmp/api_response -w "%{http_code}" \
+                    -H "Authorization: Token ${AUTH_TOKEN}" \
+                    -T "${directory}${filename}" \
+                    "${PAPERMERGE_HOST}/api/document/upload/${filename}")
+        if [ "${http_code}" -ne "200" ]; then
+            error_msg=$(<"/tmp/api_response")
+            log "$0" 2 "curl: error (${http_code}) ${error_msg}"
+            rm -f "/tmp/api_response" || \
+                log "$0" 2 "rm file \"/tmp/api_response\": error ${?}" \
+        else
+            rm -f "${directory}${filename}" \
             || \
-                log "$0" 2 "curl: error ${?}" \
-        && \
-            rm -f "${directory}${filename}" || \
-                log "$0" 2 "rm file: error ${?}" \
-        && \
-            log "$0" 0 "------------------------------------------------------"
+                log "$0" 2 "rm file \"${directory}${filename}\": error ${?}" \
+            && \
+                log "$0" 0 "------------------------------------------------------"
+        fi
     fi
 done
