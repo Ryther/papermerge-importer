@@ -1,6 +1,7 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
 
+# shellcheck disable=SC1091
 source ./utils.sh
 source ./worker.sh
 
@@ -22,5 +23,5 @@ fi
 log "$0" 0 "Starting inotify"
 inotifywait -r -m "${WATCH_FOLDER}" -e moved_to -e close_write  |
 while read -r directory events filename; do
-    upload directory filename
+    upload "${directory}" "${filename}"
 done
