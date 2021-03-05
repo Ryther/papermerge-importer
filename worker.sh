@@ -22,10 +22,11 @@ sendFile() {
     local send_dir="$1"
     local send_file="$2"
     log "$0" 1 "curl -s -o /tmp/api_response -w \"%{http_code}\" -H \"Authorization: Token ${AUTH_TOKEN:0:3}...${AUTH_TOKEN: -3}\" -T \"${send_dir}${send_file}\" \"${PAPERMERGE_HOST}/api/document/upload/${send_file}\""
-    curl -s -o /tmp/api_response -w "%{http_code}" \
+    send_code=$(curl -s -o /tmp/api_response -w "%{http_code}" \
                     -H "Authorization: Token ${AUTH_TOKEN}" \
                     -T "${send_dir}${send_file}" \
-                    "${PAPERMERGE_HOST}/api/document/upload/${send_file}"
+                    "${PAPERMERGE_HOST}/api/document/upload/${send_file}")
+    echo "${send_code}"
 }
 
 resultOK() {
