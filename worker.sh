@@ -37,14 +37,18 @@ resultOK() {
     || \
         log "$0" 3 "rm file \"${resultok_dir}${resultok_file}\": error ${?}" \
     && \
+        local ok_json; \
+        ok_json=$(<"/tmp/api_response"); \
+        log "$0" 2 "RESULT: ${ok_json}"; \
         log "$0" 0 "------------------- File uploaded --------------------"; \
         log "$0" 0 "------------------------------------------------------"
 }
 
 resultKO() {
     local resultko_code="$1"
-    error_msg=$(<"/tmp/api_response")
-    log "$0" 3 "curl: error (${resultko_code}) ${error_msg}"
+    local error_json
+    error_json=$(<"/tmp/api_response")
+    log "$0" 3 "curl: error (${resultko_code}) ${error_json}"
     rm -f "/tmp/api_response" || \
         log "$0" 3 "rm file \"/tmp/api_response\": error ${?}"
         log "$0" 3 "----------------- File NOT uploaded ------------------"; \
