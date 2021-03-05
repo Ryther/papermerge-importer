@@ -6,6 +6,7 @@ upload() {
     local worker_file="$2"
     if [ -n "${worker_file+x}" ] && [ ! "${worker_file}" = "" ]; then
         log "$0" 1 "Found new file | Filename: ${worker_file}"
+        log "$0" 1 "curl -s -o /tmp/api_response -w \"%{http_code}\" -H \"Authorization: Token ${AUTH_TOKEN:0:3}...${AUTH_TOKEN: -3}\" -T \"${worker_dir}${worker_file}\" \"${PAPERMERGE_HOST}/api/document/upload/${worker_file}\""
         result_code=$(sendFile "${worker_dir}" "${worker_file}")
         case $result_code in
             200)
@@ -26,7 +27,6 @@ sendFile() {
                     -T "${send_dir}${send_file}" \
                     "${PAPERMERGE_HOST}/api/document/upload/${send_file}")
     echo "${send_code}"
-    log "$0" 1 "curl -s -o /tmp/api_response -w \"%{http_code}\" -H \"Authorization: Token ${AUTH_TOKEN:0:3}...${AUTH_TOKEN: -3}\" -T \"${send_dir}${send_file}\" \"${PAPERMERGE_HOST}/api/document/upload/${send_file}\""
 }
 
 resultOK() {
