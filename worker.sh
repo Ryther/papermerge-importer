@@ -39,7 +39,7 @@ resultOK() {
     && \
         local ok_json; \
         ok_json=$(<"/tmp/api_response"); \
-        log "$0" 2 "RESULT: ${ok_json}"; \
+        log "$0" 0 "RESULT: ${ok_json}"; \
         log "$0" 0 "------------------- File uploaded --------------------"; \
         log "$0" 0 "------------------------------------------------------"
 }
